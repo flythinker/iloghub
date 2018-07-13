@@ -3,7 +3,8 @@ import redis
 import time
 import iloghub
 
-iloghub.LogHub.confog()
+iloghub = iloghub.LogHub()
+iloghub.config()
 
 # create logger
 logger = logging.getLogger('simple_example')
