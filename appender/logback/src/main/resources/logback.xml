@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration scan="true">
+
+    <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>../logs/iloghub.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>../logs/iloghub-%d{MM-dd}.log</fileNamePattern>
+            <maxHistory>15</maxHistory>
+        </rollingPolicy>
+        <encoder charset="UTF-8">
+            <pattern>%d{HH:mm:ss.SSS} [%thread][%logger{36}] %-5level - %msg%n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+    </appender>
+
+    <appender name="DebugFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>../logs/iloghub-debug.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>../logs/iloghub-debug-%d{MM-dd}.log</fileNamePattern>
+            <maxHistory>15</maxHistory>
+        </rollingPolicy>
+        <encoder charset="UTF-8">
+            <pattern>%d{HH:mm:ss.SSS} [%thread][%logger{36}] %-5level - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="RedisFile" class="appender.java.iloghub.core.LogbackRedisAppender">
+        <redisConfig>redis://0987654321rfvujmtgbyhn@10.9.2.238:6379</redisConfig>
+        <subscribeChannelName>iloghubLog</subscribeChannelName>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36}[:%L] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="appender.java.iloghub.core" level="DEBUG" />
+
+    <root level="INFO">
+        <appender-ref ref="DebugFile"/>
+        <appender-ref ref="RollingFile"/>
+    </root>
+
+    <logger name="appender.java.iloghub" level="DEBUG">
+        <appender-ref ref="RollingFile"/>
+        <appender-ref ref="RedisFile"/>
+    </logger>
+</configuration>
