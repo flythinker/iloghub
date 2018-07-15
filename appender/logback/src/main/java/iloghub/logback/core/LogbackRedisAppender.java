@@ -1,6 +1,6 @@
-package appender.java.iloghub.core;
+package iloghub.logback.core;
 
-import appender.java.iloghub.core.util.JedisPoolUtil;
+import iloghub.logback.core.util.JedisPoolUtil;
 import ch.qos.logback.core.OutputStreamAppender;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;

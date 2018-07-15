@@ -1,10 +1,4 @@
-package appender.java.iloghub.benchmark;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+package iloghub.logback.benchmark;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +7,6 @@ import java.util.List;
  * Created by xyc on 2018/7/9.
  */
 public class Test {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Test.class);
-
     public static void main(String[] args) {
         test();
     }

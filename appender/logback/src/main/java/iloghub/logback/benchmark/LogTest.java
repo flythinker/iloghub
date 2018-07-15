@@ -1,4 +1,4 @@
-package appender.java.iloghub.benchmark;
+package iloghub.logback.benchmark;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
