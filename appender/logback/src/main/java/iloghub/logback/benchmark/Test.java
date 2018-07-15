@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,33 +20,38 @@ public class Test {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         System.out.println("Please enter the configuration file address. If you use the default configuration file, please press Enter.");
-        yamlTest(sc.nextLine());
+        test(getConfigMapByYmlFile(sc.nextLine()));
         sc.close();
     }
 
-    private static void test() {
+    private static void test(Map configMap) {
+        if (null == configMap) {
+            LOGGER.error("configMap file is null");
+            return;
+        }
+
         List<TestThread> ttList = new ArrayList<>();
-        for (int i = 0; i < 50; i++) {
-            TestThread tt = new TestThread();
+        for (int i = 0; i < Integer.valueOf(configMap.get("threadNum").toString()); i++) {
+            TestThread tt = new TestThread(Integer.valueOf(configMap.get("printLogNum").toString()));
             tt.setName("thread-" + i);
             ttList.add(tt);
         }
         ttList.forEach(TestThread::start);
     }
 
-    private static void yamlTest(String configFileUrl) {
+    private static Map getConfigMapByYmlFile(String configFileUrl) {
         try {
             URL url = getConfigFileUrl(configFileUrl);
             if (url == null) {
-                System.out.println("config file is not find");
-                return;
+                LOGGER.error("config file is not find");
+                return null;
             }
 
             Yaml yaml = new Yaml();
-            String config = yaml.load(new FileInputStream(url.getFile())).toString();
-            System.out.println(config);
+            return (Map) yaml.load(new FileInputStream(url.getFile()));
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Test-getConfigMapByYmlFile is error", e);
+            return null;
         }
     }
 
@@ -55,7 +59,7 @@ public class Test {
         URL url;
         try {
             if (null == configFileUrl || configFileUrl.length() == 0) {
-                url = Test.class.getClassLoader().getResource("config.yaml");
+                url = Test.class.getClassLoader().getResource("iloghub.yml");
             } else {
                 url = new URL(configFileUrl);
             }

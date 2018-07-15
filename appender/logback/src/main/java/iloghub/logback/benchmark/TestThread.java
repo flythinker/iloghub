@@ -22,13 +22,29 @@ public class TestThread extends Thread {
         while (true) {
             if (0 == printLogNum) {
                 printLog();
-            } else {
-                
+            } else if (5 == printLogNum) {
+                printIntervalLog();
             }
         }
     }
 
     private void printLog() {
         LOGGER.warn(getName() + "print log test, time is " + System.currentTimeMillis());
+    }
+
+    private void printIntervalLog() {
+        long startTime = System.currentTimeMillis();
+        for (int i = 0; i < printLogNum; i++) {
+            printLog();
+        }
+        long endTime = System.currentTimeMillis();
+        long sleepTime = 1000 - (endTime - startTime);
+        if (sleepTime > 0) {
+            try {
+                sleep(sleepTime);
+            } catch (InterruptedException e) {
+                LOGGER.error("sleep is error", e);
+            }
+        }
     }
 }

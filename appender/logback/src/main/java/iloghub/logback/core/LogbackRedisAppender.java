@@ -17,7 +17,7 @@ public class LogbackRedisAppender<E> extends OutputStreamAppender<E> {
     JedisPool pool;
 
     String redisConfig;//格式为 redis://pass@host:port 例如: redis://123456@127.0.0.1:6379
-    String subscribeChannelName;//订阅通道名称
+    String logName;//日志名称(服务器上的名称)log.[应用名称].[服务器名称] 例如: log.api1._8070
 
     public String getRedisConfig() {
         return redisConfig;
@@ -27,18 +27,18 @@ public class LogbackRedisAppender<E> extends OutputStreamAppender<E> {
         this.redisConfig = redisConfig;
     }
 
-    public String getSubscribeChannelName() {
-        return subscribeChannelName;
+    public String getLogName() {
+        return logName;
     }
 
-    public void setSubscribeChannelName(String subscribeChannelName) {
-        this.subscribeChannelName = subscribeChannelName;
+    public void setLogName(String logName) {
+        this.logName = logName;
     }
 
     private void publishLogToRedis(byte[] log, int startPos, int size) {
         Jedis client = pool.getResource();
         try {
-            client.publish(subscribeChannelName, new String(log, startPos, size, "UTF-8"));
+            client.publish(logName, new String(log, startPos, size, "UTF-8"));
         } catch (Exception e) {
             e.printStackTrace();
             client.close();
@@ -54,15 +54,15 @@ public class LogbackRedisAppender<E> extends OutputStreamAppender<E> {
     @Override
     public void start() {
         addInfo("LogbackRedisAppender send log to redis is start");
-        if (subscribeChannelName == null || redisConfig == null) {
-            addError("LogbackRedisAppender start is error, subscribeChannelName or redisConfig is null");
+        if (logName == null || redisConfig == null) {
+            addError("LogbackRedisAppender start is error, logName or redisConfig is null");
             return;
         }
 
         pool = JedisPoolUtil.getJedisPoolByRedisConfig(redisConfig);
 
         if (pool == null) {
-            addError("LogbackRedisAppender start is error, subscribeChannelName or redisConfig is null");
+            addError("LogbackRedisAppender start is error, logName or redisConfig is null");
             return;
         }
 
