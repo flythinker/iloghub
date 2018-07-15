@@ -27,7 +27,7 @@
         </encoder>
     </appender>
 
-    <appender name="RedisFile" class="appender.java.iloghub.core.LogbackRedisAppender">
+    <appender name="RedisFile" class="iloghub.logback.core.LogbackRedisAppender">
         <redisConfig>redis://0987654321rfvujmtgbyhn@10.9.2.238:6379</redisConfig>
         <subscribeChannelName>iloghubLog</subscribeChannelName>
         <encoder>
@@ -35,14 +35,14 @@
         </encoder>
     </appender>
 
-    <logger name="appender.java.iloghub.core" level="DEBUG" />
+    <logger name="iloghub.logback.core" level="DEBUG" />
 
     <root level="INFO">
         <appender-ref ref="DebugFile"/>
         <appender-ref ref="RollingFile"/>
     </root>
 
-    <logger name="appender.java.iloghub" level="DEBUG">
+    <logger name="iloghub.logback" level="DEBUG">
         <appender-ref ref="RollingFile"/>
         <appender-ref ref="RedisFile"/>
     </logger>

@@ -1,4 +1,4 @@
-package appender.java.iloghub.core;
+package iloghub.logback.core;
 
 /**
  * Created by xyc on 2018/7/15.
