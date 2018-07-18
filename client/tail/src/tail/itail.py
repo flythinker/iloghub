@@ -28,30 +28,15 @@ class LogHubTail:
         self.f_arg = None
         self.c_arg = None
         self.isOnlyStat = False
+        self.isShowChannleName = False
 
-    def redis_test(self):
-        pool = redis.ConnectionPool(host='10.8.3.51', port=6379, db=0)
-        r = redis.Redis(connection_pool=pool)
-        r.execute_command("AUTH", "12345678901234567890")
-
-        #接收消息
-        ps = r.pubsub()
-        #ps.subscribe('log.hyp.mydev1')
-        ps.subscribe('hyp-dev.test')
-
-        def listen_task():
-            for i in ps.listen():
-                if i['type'] == 'message':
-                    #print(i)
-                    print("Task get", i['data'].decode("utf8"))
-        listen_task()
 
     def init_action(self):
-        print("init_action")
+        logger.info("start init")
         cwd = os.getcwd()
         filepath = cwd + "/iloghub_client.yml"
         if not os.path.exists(filepath):
-            print("created ",filepath )
+            logger.info("created file -> ",filepath )
             file_object = open(filepath, 'w')
             file_object.write(ilogback_client_sample_yml)
             file_object.close()
@@ -59,7 +44,7 @@ class LogHubTail:
         glb_iloghub_cfg_dir = home + '.iloghub'
         if not os.path.exists(glb_iloghub_cfg_dir):
             os.mkdir(glb_iloghub_cfg_dir)
-            print( "created" , glb_iloghub_cfg_dir )
+            print( "created dir -> " , glb_iloghub_cfg_dir )
 
     def read_config(self):
         # 读取配置文件
@@ -68,9 +53,7 @@ class LogHubTail:
             # 先读取当前文件
             cwd = os.getcwd()
             filepath = cwd + "/iloghub_client.yml"
-            logger.info("filepath:%s" % filepath)
             filepath2 = home = str(Path.home()) + "/.iloghub/iloghub_client.yml"
-            logger.info("filepath2:%s" % filepath2)
             if os.path.exists(filepath): #如果存在
                 config_filepath = filepath
             elif os.path.exists(filepath2):
@@ -79,16 +62,21 @@ class LogHubTail:
                 pass
 
         if config_filepath == None :
-            logger.info("ilogback_client.yml is not exist.Please create by 'itail init' command")
+            logger.info("ilogback_client.yml is not exist.Please initial it by 'itail init' command")
             sys.exit(0)
 
-        f = open(config_filepath)
+        logger.info( "read config file from: %s" % config_filepath )
+        f = open( config_filepath )
         self.config = yaml.load(f)
         f.close()
         print('config',self.config )
 
     def start_tail_task(self):
-        logger.info('itail starting')
+
+        if self.isOnlyStat:
+            logger.info('itail starting (only Statistics)')
+        else:
+            logger.info('itail starting ')
         #config
         #{'redis': {'host': '127.0.0.1', 'port': 6379, 'pass': 'pass', 'database': 0}}
         redisConfig = self.config['redis']
@@ -103,37 +91,50 @@ class LogHubTail:
         # 接收消息
         ps = r.pubsub()
         # ps.subscribe('log.hyp.mydev1')
-        ps.subscribe( self.f_arg )
+        ps.psubscribe( self.f_arg )
 
+        self.last_time_10sec_int = math.floor(time.time() / 10)  # 每5秒种这个值变化一次
+        self.total_line = 0
+        self.total_size = 0
 
-
-
-        def listen_task():
-            logger.info("listen_task ... ")
-            last_time_5sec_int = math.floor(time.time() / 5)  #每5秒种这个值变化一次
-            total_line = 0
-            total_size = 0
-            for i in ps.listen():
-                if i['type'] == 'message':
-                    if not self.isOnlyStat:
-                        print("Task get", i['data'].decode("utf8"))
+        def handle_message(message):
+            if message['type'] == 'message' or message['type'] == 'pmessage':
+                if not self.isOnlyStat:
+                    logLine = message['data'].decode("utf8")
+                    if self.isShowChannleName :
+                        chName = message['channel'].decode("utf8")
+                        print( chName +"->"+ logLine )
                     else:
-                        cur_time_5sec_int = math.floor(time.time() / 5)
-                        if cur_time_5sec_int == last_time_5sec_int:
-                            total_line += 1
-                            total_size += len(i['data'])
-                        else:
-                            logger.info("5 second stat -- line:%s size:%s" % (total_line,total_size))
-                            total_line = 1
-                            total_size = len(i['data'])
-                            last_time_5sec_int = cur_time_5sec_int
+                        print( logLine )
+                else:
+                    cur_time_10sec_int = math.floor(time.time() / 5)
+                    if cur_time_10sec_int == self.last_time_10sec_int:
+                        self.total_line += 1
+                        self.total_size += len(message['data'])
+                    else:
+                        logger.info("10sec stat -- line:%s bytes:%s" % (self.total_line, self.total_size))
+                        total_line = 1
+                        total_size = len(message['data'])
+                        self.last_time_10sec_int = cur_time_10sec_int
 
-        logger.info('start listen log:' + self.f_arg)
-        listen_task()
+        while True:
+            message = ps.get_message()
+            if message:
+                handle_message(message)
+                time.sleep(0.001)  # be nice to the system :)
+            else:
+                time.sleep(0.1)
+
+        # def listen_task():
+        #     logger.info("listen_task ... ")
+        #     for message in ps.listen():
+        #         handle_message(message)
+        # logger.info('start listen log:' + self.f_arg)
+        # listen_task()
 
     # 再读取全局配置
     def start_tail(self):
-        self.opts, self.args = getopt.getopt(sys.argv[1:], 'sf:c:', [])  # -s 只做统计 -f loghub_日志通道名称  -c 手动制定配置文件
+        self.opts, self.args = getopt.getopt(sys.argv[1:], 'nsf:c:', [])  # -n 显示通道名称 -s 只做统计 -f loghub_日志通道名称  -c 手动制定配置文件
         logger.info ( ["opts" , self.opts] )
         logger.info( ["args", self.args] )
         if "init" in self.args:
@@ -147,15 +148,18 @@ class LogHubTail:
                 self.c_arg = opt[1]
             if opt[0] == '-s':
                 self.isOnlyStat = True
+            if opt[0] == '-n':
+                self.isShowChannleName = True
         self.read_config()
-        logger.info("....")
         if self.f_arg is not None:
             self.start_tail_task()
         else:
-            print("-f parameter is not exists.")
+            logger.error("-n 显示通道名称 -s 只做统计 -f loghub_日志通道名称  -c 手动制定配置文件 \r\n -f parameter is not exists.")
+
+def main():
+    tail = LogHubTail()
+    tail.start_tail()
 
 if __name__ == "__main__":
     #test1()
-    #redis_test()
-    tail = LogHubTail()
-    tail.start_tail()
+    main()

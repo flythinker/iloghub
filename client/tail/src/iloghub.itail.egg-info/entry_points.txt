@@ -1,0 +1,3 @@
+[console_scripts]
+itail = tail.itail:main
+

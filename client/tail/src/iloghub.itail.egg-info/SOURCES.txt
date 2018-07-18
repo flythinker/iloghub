@@ -1,0 +1,11 @@
+README.md
+setup.py
+src/iloghub.itail.egg-info/PKG-INFO
+src/iloghub.itail.egg-info/SOURCES.txt
+src/iloghub.itail.egg-info/dependency_links.txt
+src/iloghub.itail.egg-info/entry_points.txt
+src/iloghub.itail.egg-info/not-zip-safe
+src/iloghub.itail.egg-info/top_level.txt
+src/tail/__init__.py
+src/tail/itail.py
+src/tail/itail_dev_run.py

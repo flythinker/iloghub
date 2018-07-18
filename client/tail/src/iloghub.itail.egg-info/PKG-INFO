@@ -1,0 +1,16 @@
+Metadata-Version: 1.2
+Name: iloghub.itail
+Version: 0.0.19
+Summary: a instance log tail tool for iloghub
+Home-page: https://github.com/flythinker/iloghub
+Author: flythinker
+Author-email: 67495224@qq.com
+License: MIT
+Description: a instance log tail tool for iloghub. iloghub is a opensource instance implement for java and python
+        
+Keywords: "iloghub itail log java flythinker"
+Platform: UNKNOWN
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Topic :: Software Development :: Build Tools
+Requires-Python: >=3.6
