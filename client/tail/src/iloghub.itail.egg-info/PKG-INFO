@@ -1,6 +1,6 @@
 Metadata-Version: 1.2
 Name: iloghub.itail
-Version: 0.0.19
+Version: 0.0.20
 Summary: a instance log tail tool for iloghub
 Home-page: https://github.com/flythinker/iloghub
 Author: flythinker
