@@ -21,21 +21,12 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
-client/tail/.idea/workspace.xml
-client/tail/.idea/webServers.xml
-client/tail/.idea/tail.iml
-client/tail/.idea/modules.xml
-client/tail/.idea/misc.xml
-client/tail/.idea/libraries/R_User_Library.xml
-client/tail/.idea/deployment.xml
-client/tail/dist/dist/iloghub.itail-0.0.3/setup.py
-client/tail/dist/dist/iloghub.itail-0.0.3/itail.py
-client/tail/dist/dist/iloghub.itail-0.0.3/iloghub_tail/tail.py
-client/tail/dist/dist/iloghub.itail-0.0.3.tar
-client/tail/dist/dist/iloghub.itail-0.0.3/PKG-INFO
-client/tail/iloghub.itail.egg-info/top_level.txt
-client/tail/iloghub.itail.egg-info/SOURCES.txt
-client/tail/iloghub.itail.egg-info/requires.txt
-client/tail/iloghub.itail.egg-info/PKG-INFO
-client/tail/iloghub.itail.egg-info/dependency_links.txt
-client/tail/iloghub_tail/__pycache__/tail.cpython-37.pyc
+client/tail/.idea/*
+client/tail/dist/*
+client/tail/iloghub.itail.egg-info/*
+client/tail/.idea/*
+LogTestTool/.idea/*
+appender/python/.idea/*
+appender/logback/.idea/*
+client/tail/src/iloghub.itail.egg-info/*
+LogTestTool/LogTestTool.iml
