@@ -30,3 +30,4 @@ appender/python/.idea/*
 appender/logback/.idea/*
 client/tail/src/iloghub.itail.egg-info/*
 LogTestTool/LogTestTool.iml
+appender/logback/.idea/libraries/Maven__org_yaml_snakeyaml_1_17.xml
